@@ -209,15 +209,31 @@ The project follows **MVVM (Model-View-ViewModel)** architecture with clear sepa
 
 ## Screenshots
 
-> The app features a modern Material 3 design with both light and dark mode support.
+> The app features a modern Material 3 design with dark mode support, warm orange brand palette, and premium card-based layouts.
 
-| Splash Screen | Login Screen | Discovery Feed |
-|:---:|:---:|:---:|
-| Animated brand splash with gradient background | Google Sign-In with professional branding | Filterable worker cards with search and categories |
+### Login & Authentication
+<p align="center">
+  <img src="Screenshots/login_screen.jpeg" width="280" alt="Login Screen with Google Sign-In"/>
+</p>
 
-| Worker Detail | Profile Editor | Leads Inbox |
-|:---:|:---:|:---:|
-| Full profile with services, portfolio, and reviews | 4-tab business hub with service & portfolio management | Swipe-to-dismiss customer inquiries with call actions |
+### Discovery Feed
+<p align="center">
+  <img src="Screenshots/discovery_feed.jpeg" width="280" alt="Discovery Feed with search and category filters"/>
+  &nbsp;&nbsp;
+  <img src="Screenshots/location_filter.jpeg" width="280" alt="Location-based district filter dropdown"/>
+</p>
+
+### Worker Cards & Profiles
+<p align="center">
+  <img src="Screenshots/worker_cards.jpeg" width="280" alt="Verified professional worker cards with skills and pricing"/>
+</p>
+
+### Business Hub (Profile Editor)
+<p align="center">
+  <img src="Screenshots/profile_editor.jpeg" width="280" alt="Professional profile editor with identity, stats, and verification"/>
+  &nbsp;&nbsp;
+  <img src="Screenshots/services_tab.jpeg" width="280" alt="Services management tab with add, edit, and delete"/>
+</p>
 
 ---
 
