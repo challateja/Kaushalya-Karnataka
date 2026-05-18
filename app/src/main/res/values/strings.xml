@@ -1,3 +1,34 @@
 <resources>
-    <string name="app_name">Kaushalya-Karnataka</string>
+    <string name="app_name">Kaushalya Karnataka</string>
+    <string name="slogan">Empowering Karnataka\'s Workforce</string>
+
+    <!-- Discovery Screen -->
+    <string name="hello_citizen">Hello, Citizen</string>
+    <string name="hello_user">Hello, %1$s</string>
+    <string name="search_placeholder">Search services (e.g. Plumber)...</string>
+    <string name="recently_active">Recently Active</string>
+    <string name="new_offers">New Offers</string>
+    <string name="popular_skills">Popular Skills</string>
+    <string name="verified_pros">Verified Professionals</string>
+    <string name="all_karnataka">All Karnataka</string>
+
+    <!-- Filters -->
+    <string name="refine_discovery">Refine Discovery</string>
+    <string name="reset">Reset</string>
+    <string name="operating_district">Operating District</string>
+    <string name="min_rating">Minimum Rating</string>
+    <string name="budget_up_to">Budget (Up to)</string>
+    <string name="apply_filters">Apply Filters</string>
+
+    <!-- Empty States & Errors -->
+    <string name="no_matches_found">No Matches Found</string>
+    <string name="no_matches_desc">We couldn\'t find any professionals matching your current filters in %1$s.</string>
+    <string name="clear_filters">Clear All Filters</string>
+    <string name="connection_error">Connection Error: %1$s</string>
+
+    <!-- Categories -->
+    <string name="cat_electrician">Electrician</string>
+    <string name="cat_plumber">Plumber</string>
+    <string name="cat_carpenter">Carpenter</string>
+    <string name="cat_painter">Painter</string>
 </resources>

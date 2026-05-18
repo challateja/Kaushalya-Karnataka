@@ -7,6 +7,7 @@ import com.example.kaushalya_karnataka.data.WorkerRepository
 import com.example.kaushalya_karnataka.models.HireRequest
 import com.example.kaushalya_karnataka.models.Review
 import com.example.kaushalya_karnataka.models.Worker
+import com.example.kaushalya_karnataka.util.Resource
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,17 +31,17 @@ class WorkerDetailViewModel(
     val uiState: StateFlow<WorkerDetailUiState> = _uiState.asStateFlow()
 
     init {
-        loadWorker()
+        loadWorkerStream()
     }
 
-    private fun loadWorker() {
+    private fun loadWorkerStream() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val worker = repository.getWorkerById(workerId)
-            if (worker != null) {
-                _uiState.update { it.copy(worker = worker, isLoading = false) }
-            } else {
-                _uiState.update { it.copy(isLoading = false, error = "Worker not found") }
+            repository.getWorkerStream(workerId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+                    is Resource.Success -> _uiState.update { it.copy(worker = resource.data, isLoading = false, error = null) }
+                    is Resource.Error -> _uiState.update { it.copy(isLoading = false, error = resource.message) }
+                }
             }
         }
     }
@@ -61,16 +62,17 @@ class WorkerDetailViewModel(
             )
 
             val updatedWorker = currentWorker.copy(
-                hireRequests = (currentWorker.hireRequests ?: emptyList()) + newRequest
+                hireRequests = (currentWorker.hireRequests ?: emptyList()) + newRequest,
+                updatedAt = System.currentTimeMillis()
             )
 
-            try {
-                repository.saveWorker(updatedWorker)
-                _uiState.update { it.copy(isHiring = false, worker = updatedWorker) }
+            val result = repository.saveWorker(updatedWorker)
+            if (result is Resource.Success) {
                 onSuccess()
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isHiring = false, error = "Failed to send request") }
+            } else {
+                _uiState.update { it.copy(error = result.message ?: "Failed to send request") }
             }
+            _uiState.update { it.copy(isHiring = false) }
         }
     }
 
@@ -94,15 +96,15 @@ class WorkerDetailViewModel(
             val updatedWorker = currentWorker.copy(
                 reviews = currentReviews + newReview,
                 reviewCount = totalReviews,
-                rating = newAvgRating
+                rating = newAvgRating,
+                updatedAt = System.currentTimeMillis()
             )
 
-            try {
-                repository.saveWorker(updatedWorker)
-                _uiState.update { it.copy(worker = updatedWorker) }
+            val result = repository.saveWorker(updatedWorker)
+            if (result is Resource.Success) {
                 onSuccess()
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to submit review") }
+            } else {
+                _uiState.update { it.copy(error = result.message ?: "Failed to submit review") }
             }
         }
     }

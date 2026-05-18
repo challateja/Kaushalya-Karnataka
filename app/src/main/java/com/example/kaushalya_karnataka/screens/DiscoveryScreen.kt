@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.kaushalya_karnataka.R
 import com.example.kaushalya_karnataka.components.CategoryChip
 import com.example.kaushalya_karnataka.components.EmptyState
 import com.example.kaushalya_karnataka.components.ShimmerWorkerCard
@@ -109,8 +111,9 @@ fun DiscoveryScreen(
                                     }
                                 }
                             }
+                            val firstName = currentUser?.displayName?.split(" ")?.firstOrNull()
                             Text(
-                                text = "Hello, ${currentUser?.displayName?.split(" ")?.firstOrNull() ?: "Citizen"}",
+                                text = if (firstName != null) stringResource(R.string.hello_user, firstName) else stringResource(R.string.hello_citizen),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = (-1).sp
@@ -167,7 +170,7 @@ fun DiscoveryScreen(
                                 Icon(Icons.Default.CloudOff, null, tint = MaterialTheme.colorScheme.error)
                                 Spacer(Modifier.width(12.dp))
                                 Text(
-                                    text = "Connection Error: ${uiState.error}",
+                                    text = stringResource(R.string.connection_error, uiState.error ?: ""),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
@@ -187,7 +190,7 @@ fun DiscoveryScreen(
                             value = uiState.searchQuery,
                             onValueChange = { viewModel.onSearchQueryChanged(it) },
                             modifier = Modifier.weight(1f),
-                            placeholder = { Text("Search services...") },
+                            placeholder = { Text(stringResource(R.string.search_placeholder)) },
                             leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.primary) },
                             shape = RoundedCornerShape(24.dp),
                             singleLine = true,
@@ -226,12 +229,12 @@ fun DiscoveryScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                "Recently Active",
+                                stringResource(R.string.recently_active),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Black
                             )
                             Text(
-                                "New Offers",
+                                stringResource(R.string.new_offers),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
@@ -254,7 +257,7 @@ fun DiscoveryScreen(
                 item {
                     Spacer(Modifier.height(32.dp))
                     Text(
-                        "Popular Skills",
+                        stringResource(R.string.popular_skills),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.padding(horizontal = 24.dp)
@@ -287,7 +290,7 @@ fun DiscoveryScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Verified Professionals",
+                            stringResource(R.string.verified_pros),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Black
                         )
@@ -321,8 +324,8 @@ fun DiscoveryScreen(
                     if (uiState.filteredWorkers.isEmpty()) {
                         item {
                             EmptyState(
-                                title = "No Matches Found",
-                                description = "We couldn't find any professionals matching your current filters in ${uiState.selectedLocation}.",
+                                title = stringResource(R.string.no_matches_found),
+                                description = stringResource(R.string.no_matches_desc, uiState.selectedLocation),
                                 icon = Icons.Default.PersonSearch,
                                 action = {
                                     Button(onClick = { 
@@ -332,7 +335,7 @@ fun DiscoveryScreen(
                                         viewModel.onMaxPriceChanged(10000)
                                         viewModel.onSearchQueryChanged("")
                                     }, shape = RoundedCornerShape(12.dp)) {
-                                        Text("Clear All Filters")
+                                        Text(stringResource(R.string.clear_filters))
                                     }
                                 }
                             )
@@ -386,15 +389,15 @@ fun FilterContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Refine Discovery", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+            Text(stringResource(R.string.refine_discovery), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             TextButton(onClick = onClear) {
-                Text("Reset", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.reset), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
         }
         
         Spacer(Modifier.height(24.dp))
         
-        Text("Operating District", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.operating_district), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             items(locations) { loc ->
@@ -408,7 +411,7 @@ fun FilterContent(
         
         Spacer(Modifier.height(32.dp))
         
-        Text("Minimum Rating", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.min_rating), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Slider(
@@ -435,7 +438,7 @@ fun FilterContent(
 
         Spacer(Modifier.height(32.dp))
         
-        Text("Budget (Up to)", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.budget_up_to), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Slider(
@@ -465,7 +468,7 @@ fun FilterContent(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("Apply Filters", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.apply_filters), fontWeight = FontWeight.Bold)
         }
     }
 }

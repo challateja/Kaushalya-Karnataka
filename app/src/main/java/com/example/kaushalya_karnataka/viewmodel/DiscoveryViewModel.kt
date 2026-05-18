@@ -3,9 +3,12 @@ package com.example.kaushalya_karnataka.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.kaushalya_karnataka.data.SampleData
 import com.example.kaushalya_karnataka.data.WorkerRepository
 import com.example.kaushalya_karnataka.models.Category
 import com.example.kaushalya_karnataka.models.Worker
+import com.example.kaushalya_karnataka.util.Resource
+import com.example.kaushalya_karnataka.util.WorkerSearch
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -19,7 +22,6 @@ data class DiscoveryUiState(
     val selectedCategory: Category? = null,
     val selectedLocation: String = "All Karnataka",
     val minRating: Double = 0.0,
-    val maxPrice: Int = 10000,
     val availableLocations: List<String> = listOf("All Karnataka", "Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum")
 )
 
@@ -33,15 +35,32 @@ class DiscoveryViewModel(private val repository: WorkerRepository) : ViewModel()
 
     fun loadWorkers() {
         viewModelScope.launch {
-            repository.getWorkers()
-                .onStart { _uiState.update { it.copy(isLoading = true) } }
-                .catch { e -> 
-                    _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
+            repository.getWorkers().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
+                    is Resource.Success -> {
+                        val finalWorkers = if (resource.data.isNullOrEmpty()) SampleData.workers else resource.data
+                        _uiState.update { it.copy(
+                            workers = finalWorkers,
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = null
+                        ) }
+                        applyFilters()
+                    }
+                    is Resource.Error -> {
+                        _uiState.update { it.copy(
+                            workers = SampleData.workers, // Fallback for stability
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = resource.message
+                        ) }
+                        applyFilters()
+                    }
                 }
-                .collect { workers ->
-                    _uiState.update { it.copy(workers = workers, isLoading = false, isRefreshing = false, error = null) }
-                    applyFilters()
-                }
+            }
         }
     }
 
@@ -70,56 +89,15 @@ class DiscoveryViewModel(private val repository: WorkerRepository) : ViewModel()
         applyFilters()
     }
 
-    fun onMaxPriceChanged(price: Int) {
-        _uiState.update { it.copy(maxPrice = price) }
-        applyFilters()
-    }
-
     private fun applyFilters() {
         _uiState.update { state ->
-            var result = state.workers
-            
-            // Filter by Category
-            state.selectedCategory?.let { category ->
-                result = result.filter { it.category == category.name }
-            }
-            
-            // Filter by Location
-            if (state.selectedLocation != "All Karnataka") {
-                result = result.filter { worker ->
-                    worker.location?.contains(state.selectedLocation, ignoreCase = true) == true
-                }
-            }
-
-            // Filter by Rating
-            result = result.filter { (it.rating ?: 0.0) >= state.minRating }
-
-            // Filter by Price (check if any service is below or equal to maxPrice)
-            if (state.maxPrice < 10000) {
-                result = result.filter { worker ->
-                    val minServicePrice = worker.services?.minOfOrNull { it.price ?: 0 } ?: 0
-                    minServicePrice <= state.maxPrice
-                }
-            }
-            
-            // Filter by Search Query (including Skills and Services)
-            if (state.searchQuery.isNotBlank()) {
-                result = result.filter { worker ->
-                    val catDisplayName = worker.getCategoryEnum().displayName
-                    val matchesSkills = worker.skills?.any { it.contains(state.searchQuery, ignoreCase = true) } == true
-                    val matchesServices = worker.services?.any { it.title?.contains(state.searchQuery, ignoreCase = true) == true } == true
-                    
-                    (worker.name?.contains(state.searchQuery, ignoreCase = true) == true) ||
-                    catDisplayName.contains(state.searchQuery, ignoreCase = true) ||
-                    (worker.location?.contains(state.searchQuery, ignoreCase = true) == true) ||
-                    matchesSkills ||
-                    matchesServices
-                }
-            }
-            
-            // Sort by: Most Recent Updates first, then by Rating
-            result = result.sortedWith(compareByDescending<Worker> { it.updatedAt ?: 0L }.thenByDescending { it.rating ?: 0.0 })
-
+            val result = WorkerSearch.filterWorkers(
+                workers = state.workers,
+                query = state.searchQuery,
+                category = state.selectedCategory?.name,
+                location = state.selectedLocation,
+                minRating = state.minRating
+            )
             state.copy(filteredWorkers = result)
         }
     }
