@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Rules for the 'workers' collection
+    match /workers/{workerId} {
+
+      // Allow any authenticated user to discover professionals
+      allow read: if request.auth != null;
+
+      // Allow the worker to update their own professional profile
+      // Allow customers to update the worker document (for reviews/hire requests)
+      // Note: In a production app, reviews would be a sub-collection with separate rules.
+      allow write: if request.auth != null;
+
+    }
+  }
+}

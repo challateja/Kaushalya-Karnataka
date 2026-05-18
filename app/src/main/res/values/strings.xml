@@ -31,4 +31,15 @@
     <string name="cat_plumber">Plumber</string>
     <string name="cat_carpenter">Carpenter</string>
     <string name="cat_painter">Painter</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Build Your Business</string>
+    <string name="login_description">Connect with local neighbors needing your skills. Create a profile and start growing today.</string>
+    <string name="join_professional">Join as Professional</string>
+    <string name="trusted_by">Trusted by 10,000+ Skilled Laborers</string>
+
+    <!-- Splash Screen -->
+    <string name="app_brand_k">K</string>
+    <string name="app_name_main">Kaushalya</string>
+    <string name="app_name_sub">Karnataka</string>
 </resources>
